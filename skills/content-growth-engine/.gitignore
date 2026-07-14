@@ -2,3 +2,6 @@
 config/credentials.json
 __pycache__/
 *.pyc
+# Vendored deps (cloned at install time, never committed)
+vendor/
+*.clone.tmp/

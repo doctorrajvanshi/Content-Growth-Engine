@@ -28,6 +28,31 @@ git clone https://github.com/doctorrajvanshi/Content-Growth-Engine.git
 cp -r Content-Growth-Engine/skills/content-growth-engine ~/.hermes/skills/
 ```
 
+### Dependencies (install last30days)
+
+`trending_topics.py` uses the [`last30days`](https://github.com/mvanhorn/last30days-skill)
+skill to pull live conversations. It is **not vendored** (it's 18 MB with
+API-key-dependent backends). Install it from its canonical public repo via
+Hermes — the proper "install from original repo" path:
+
+```bash
+hermes skills tap add mvanhorn/last30days-skill
+hermes skills install last30days
+```
+
+Or run the resolver, which prints those commands if the skill is missing:
+
+```bash
+python deps/install_deps.py
+```
+
+`trending_topics.py` auto-detects last30days at `~/.hermes/skills/last30days`.
+If you skip this, trending discovery is disabled but everything else works.
+
+> `last30days` may need API keys (e.g. `SCRAPECREATORS_API_KEY`) for some
+> sources — see its own README. Those are set in the consumer's environment,
+> outside this skill.
+
 ### Secrets are file-based (scanner-clean)
 
 This skill reads secrets from a **gitignored** `config/credentials.json` via

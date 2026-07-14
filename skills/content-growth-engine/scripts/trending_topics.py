@@ -21,14 +21,27 @@ import load_config as cfgmod
 cfg = cfgmod.load(__file__)
 ROOT = Path(cfg["_root"])
 LIBRARY = ROOT / "knowledge-engine" / "trade_rules_library"
-LAST30 = ROOT / "last30days-skill" / "skills" / "last30days" / "scripts"
-if LAST30.exists():
+
+def find_last30days() -> Path | None:
+    """Locate the last30days engine scripts dir (installed or vendored-in-repo)."""
+    candidates = [
+        Path.home() / ".hermes" / "skills" / "last30days" / "scripts",
+        ROOT / "last30days-skill" / "skills" / "last30days" / "scripts",
+        ROOT / "vendor" / "last30days" / "scripts",
+    ]
+    for c in candidates:
+        if c.exists():
+            return c
+    return None
+
+LAST30 = find_last30days()
+if LAST30:
     sys.path.insert(0, str(LAST30))
 
 
 def run_last30days(topic: str, sources: str = "reddit,youtube") -> str:
-    if not LAST30.exists():
-        return "ERROR: last30days skill not found at expected path."
+    if not LAST30:
+        return "ERROR: last30days skill not found. Run: python deps/install_deps.py"
     try:
         import last30days as engine
         # Call the engine's programmatic entry if available; else fall back.
