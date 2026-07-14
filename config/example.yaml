@@ -1,0 +1,44 @@
+# ============================================================================
+# Content Growth Engine — configuration (parameterize per product/industry)
+# Copy this file, fill it in, and point CGE_REPO at your project root.
+# NEVER put bot tokens / API keys here. Use env vars (CGE_*) or config/bots.yaml.
+# ============================================================================
+
+product:
+  name: "YourProduct"
+  domain: "https://guides.yourproduct.com"      # or env CGE_SITE_DOMAIN
+  # Honest, topic-specific CTA. {topic} and {url} are substituted at runtime.
+  cta_template: "YourProduct handles compliant {topic} — so you never face this failure mode. {url}"
+
+# REQUIRED: authoritative, live sources. Empty/missing => generator must refuse.
+sources:
+  - path: "C:/regulatory/pdfs/*.pdf"            # local official docs
+  - rss: "https://standards-body.org/rulings/rss.xml"
+  - url: "https://standards-body.org/texts/"
+
+# Category map for nav + analytics. Each entry: key + match-words.
+categories:
+  - {key: "core", match: ["core", "standard"]}
+  - {key: "disputes", match: ["dispute", "reject", "refuse"]}
+  - {key: "practical", match: ["practical", "checklist", "how-to"]}
+
+# Which distribution bots to wire (env tokens: CGE_TG_<PLATFORM>)
+platforms:
+  linkedin: true
+  twitter: true
+  reddit: true
+  qa: true                                       # StackOverflow + GitHub
+
+# Trending-topic search seeds (also editable in config; last30days required)
+topics:
+  - "your domain discrepancy"
+  - "your domain compliance"
+  - "your standard latest update"
+
+analytics:
+  ga4_id: "G-XXXXXXX"                            # or env CGE_GA4_ID
+  formspree_id: "xxxxxx"                         # or env CGE_FORMSPREE_ID
+
+indexing:
+  indexnow_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"   # or env CGE_INDEXNOW_KEY
+  # Google: set CGE_GOOGLE_SA_JSON (service-account JSON path) — never inline.
