@@ -1,2 +1,4 @@
-scripts/__pycache__/
+# Secrets — NEVER commit
+config/credentials.json
 __pycache__/
+*.pyc

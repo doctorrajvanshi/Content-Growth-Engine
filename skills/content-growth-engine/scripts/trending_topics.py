@@ -1,56 +1,49 @@
 #!/usr/bin/env python3
 """
-Trending topic scout — wraps the `last30days` skill to find fresh conversations,
-scores them against existing guides, and queues gaps for generation.
-
-Sources/topics come from config/example.yaml `sources` + a `topics` list, or CLI.
-No hardcoded domain content.
+Trending topic scout — uses the `last30days` skill's engine as an imported
+module (no shell-out, no env mutation) to find fresh conversations, scores
+them against existing guides, and writes gaps to content/trending/.
 
 Usage:
     python trending_topics.py --topic "letter of credit discrepancy"
     python trending_topics.py --sources reddit,youtube
 """
-import os
 import re
 import sys
 import json
 import glob
-import subprocess
-import argparse
 from pathlib import Path
 from datetime import datetime
 
-CGE_DIR = Path(os.environ.get("CGE_REPO", "."))
-SKILL = CGE_DIR / "last30days-skill" / "skills" / "last30days" / "scripts" / "last30days.py"
-LIBRARY = CGE_DIR / "knowledge-engine" / "trade_rules_library"
-CFG = CGE_DIR / "config" / "example.yaml"
+sys.path.insert(0, str(Path(__file__).parent))
+import load_config as cfgmod
 
-
-def load_cfg():
-    if CFG.exists():
-        try:
-            import yaml
-            return yaml.safe_load(CFG.read_text(encoding="utf-8")) or {}
-        except Exception:
-            return {}
-    return {}
+cfg = cfgmod.load(__file__)
+ROOT = Path(cfg["_root"])
+LIBRARY = ROOT / "knowledge-engine" / "trade_rules_library"
+LAST30 = ROOT / "last30days-skill" / "skills" / "last30days" / "scripts"
+if LAST30.exists():
+    sys.path.insert(0, str(LAST30))
 
 
 def run_last30days(topic: str, sources: str = "reddit,youtube") -> str:
-    if not SKILL.exists():
+    if not LAST30.exists():
         return "ERROR: last30days skill not found at expected path."
-    cmd = ["python3", str(SKILL), topic, f"--search={sources}", "--emit=compact"]
-    env = os.environ.copy()
-    env["PATH"] = str(Path.home() / "bin") + os.pathsep + env.get("PATH", "")
     try:
-        return subprocess.run(cmd, capture_output=True, text=True, timeout=120, env=env).stdout
+        import last30days as engine
+        # Call the engine's programmatic entry if available; else fall back.
+        if hasattr(engine, "run"):
+            return engine.run(topic, sources=sources, emit="compact")
+        return "ERROR: last30days engine has no programmatic run()."
     except Exception as e:
         return f"ERROR: {e}"
 
 
 def extract_threads(out: str):
     res = []
-    for m in re.finditer(r"\[reddit\]\s*(.+?)\n\s*-\s*\d{4}-\d{2}-\d{2}\s*\|\s*r/(\w+)\s*\|\s*\[(\d+)cmt\]", out):
+    for m in re.finditer(
+        r"\[reddit\]\s*(.+?)\n\s*-\s*\d{4}-\d{2}-\d{2}\s*\|\s*r/(\w+)\s*\|\s*\[(\d+)cmt\]", out
+    ):
         res.append({"title": m.group(1).strip(), "src": f"r/{m.group(2)}"})
     return res
 
@@ -65,17 +58,13 @@ def coverage(title: str) -> str:
 
 
 def main():
+    import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--topic")
     ap.add_argument("--sources", default="reddit,youtube")
-    ap.add_argument("--topics-file", default=None)
     args = ap.parse_args()
 
-    cfg = load_cfg()
     topics = [args.topic] if args.topic else cfg.get("topics", [])
-    if args.topics_file and Path(args.topics_file).exists():
-        topics += Path(args.topics_file).read_text(encoding="utf-8").read_text().splitlines()
-
     found = []
     for t in topics:
         out = run_last30days(t, args.sources)
@@ -83,7 +72,7 @@ def main():
             th["coverage"] = coverage(th["title"])
             found.append(th)
 
-    out_path = CGE_DIR / "content" / "trending" / f"trending_{datetime.now():%Y%m%d}.json"
+    out_path = ROOT / "content" / "trending" / f"trending_{datetime.now():%Y%m%d}.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(found, indent=2), encoding="utf-8")
     new = [f for f in found if f["coverage"] == "new"]

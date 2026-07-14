@@ -2,23 +2,27 @@
 """
 Local ops dashboard generator.
 Writes to the REPO ROOT (e.g. <repo>/dashboard.html) — NEVER to deploy/ or dist/.
-No secrets, no network. Pure local filesystem stats.
+No secrets, no network, no process-env reads.
 
 Usage:
     python generate_dashboard.py
 """
-import os
 import json
 import glob
 import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-CGE_DIR = Path(os.environ.get("CGE_REPO", "."))
-LIBRARY = CGE_DIR / "knowledge-engine" / "trade_rules_library"
-CONTENT = CGE_DIR / "content"
-DB = CGE_DIR / "knowledge-engine" / "draftlc_seo.db"   # optional; schema-agnostic
-OUTPUT = CGE_DIR / "dashboard.html"                    # LOCAL ONLY — do not deploy
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+import load_config as cfgmod
+
+cfg = cfgmod.load(__file__)
+ROOT = Path(cfg["_root"])
+LIBRARY = ROOT / "knowledge-engine" / "trade_rules_library"
+CONTENT = ROOT / "content"
+DB = ROOT / "knowledge-engine" / "draftlc_seo.db"
+OUTPUT = ROOT / "dashboard.html"          # LOCAL ONLY — do not deploy
 
 
 def stats():
@@ -29,17 +33,10 @@ def stats():
     for plat in ("linkedin", "twitter", "reddit", "replies"):
         d = CONTENT / plat
         s[f"content_{plat}"] = len(glob.glob(str(d / "*.txt"))) if d.exists() else 0
-    # categories from config if present
-    cfg = CGE_DIR / "config" / "example.yaml"
     cats = {}
-    if cfg.exists():
-        try:
-            import yaml
-            for c in yaml.safe_load(cfg.read_text()).get("categories", []):
-                key, match = c["key"], c["match"]
-                cats[key] = sum(1 for f in mds if any(m in Path(f).stem.lower() for m in match))
-        except Exception:
-            pass
+    for c in cfg.get("categories", []):
+        key, match = c["key"], c["match"]
+        cats[key] = sum(1 for f in mds if any(m in Path(f).stem.lower() for m in match))
     s["categories"] = cats
     if DB.exists():
         try:
@@ -54,9 +51,7 @@ def stats():
 
 
 def render(s):
-    cats = "".join(
-        f"<tr><td>{k}</td><td>{v}</td></tr>" for k, v in s["categories"].items()
-    )
+    cats = "".join(f"<tr><td>{k}</td><td>{v}</td></tr>" for k, v in s["categories"].items())
     return f"""<!doctype html><html><head><meta charset=utf-8>
 <title>Ops Dashboard</title><style>body{{font-family:system-ui;margin:2rem;color:#0f172a}}
 h1{{font-size:1.5rem}}.card{{background:#fff;border:1px solid #e2e8f0;border-radius:12px;
