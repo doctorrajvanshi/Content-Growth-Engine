@@ -45,8 +45,9 @@ def load(script_file: str, repo_override: str | None = None) -> dict:
         try:
             import yaml
             params = yaml.safe_load(yaml_path.read_text(encoding="utf-8")) or {}
-        except Exception:
-            params = {}
+        except Exception as e:
+            # Fail loudly — a broken example.yaml must not silently become {}.
+            raise SystemExit(f"✗ config/example.yaml invalid: {e}")
 
     secrets: dict = {}
     cred_path = cfg_dir / "credentials.json"

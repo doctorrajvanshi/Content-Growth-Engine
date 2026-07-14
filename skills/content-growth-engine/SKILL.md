@@ -1,12 +1,15 @@
 ---
 name: content-growth-engine
 version: "1.0.0"
-description: >
-  Autonomous content engine: generate a compliance/domain guide library from LIVE
-  regulatory sources, deploy as a static site, capture leads via GA4 + email,
-  distribute to LinkedIn/Twitter/Reddit/SO/GitHub via per-platform Telegram bots
-  with one-tap "Open & Post" buttons, monitor trending topics, and surface an
-  ops dashboard. Reusable across products, services, and industries.
+description: >-
+  Parameterized content engine: ingest authoritative sources (RSS/local/URL),
+  generate a markdown guide library, render it as a static SEO site with lead
+  capture (GA4 + email), distribute to LinkedIn/Twitter/Reddit/SO/GitHub via
+  per-platform Telegram bots with one-tap "Open & Post" buttons, monitor
+  trending topics (via the last30days skill), submit to IndexNow/Google, and
+  surface a local ops dashboard. Domain-agnostic — no hard-coded product or
+  regulations; all branding comes from config. Reusable across products,
+  services, and industries.
 author: DraftLC
 license: MIT
 user-invocable: true
@@ -65,7 +68,7 @@ sources:                                      # REQUIRED — live/authoritative
   - rss: "https://example.org/rulings/rss.xml"
   - url: "https://standards-body.org/texts/"
 categories:                                  # used for nav + analytics
-  - {key: "ucp600", match: ["ucp", "600"]}
+  - {key: "core", match: ["core", "standard"]}
   - {key: "disputes", match: ["dispute", "reject"]}
 platforms:                                    # which bots to wire
   linkedin: true

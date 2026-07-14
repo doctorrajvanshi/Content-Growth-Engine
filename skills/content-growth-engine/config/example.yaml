@@ -9,12 +9,20 @@ product:
   name: "YourProduct"
   domain: "https://guides.yourproduct.com"      # used by scripts via load_config
   # Honest, topic-specific CTA. {topic} and {url} are substituted at runtime.
-  cta_template: "YourProduct handles compliant {topic} — so you never face this failure mode. {url}"
+  cta_template: "YourProduct handles compliant {topic} — learn more: {url}"
 
-# REQUIRED: authoritative, live sources. Empty/missing => generator must refuse.
+# Site rendering
+site_title: "YourProduct Guides"
+site_description: "Authoritative, practical guides."
+accent: "#f59e0b"            # header/button color (any CSS color)
+library: "knowledge-engine/trade_rules_library"   # markdown source dir (relative to repo root)
+site_out: "dist/compliance-guides"                # rendered HTML output dir
+
+# REQUIRED: authoritative, live sources for ingest_sources.py.
+# Empty/missing => generator refuses. No hard-coded topics here.
 sources:
-  - path: "C:/regulatory/pdfs/*.pdf"            # local official docs
-  - rss: "https://standards-body.org/rulings/rss.xml"
+  - rss: "https://example.org/standards/rss.xml"
+  - path: "C:/regulatory/pdfs/*.pdf"             # local official docs (text/md)
   - url: "https://standards-body.org/texts/"
 
 # Category map for nav + analytics. Each entry: key + match-words.
@@ -23,14 +31,19 @@ categories:
   - {key: "disputes", match: ["dispute", "reject", "refuse"]}
   - {key: "practical", match: ["practical", "checklist", "how-to"]}
 
-# Which distribution bots to wire (tokens in config/credentials.json)FORM>)
+# Reference-extraction patterns (USER-SUPPLIED regexes). Generic engine — no
+# hard-coded regulations. Single-quoted so backslashes are literal. Example:
+# reference_patterns: ['\s*(?:Article|Art)\.?\s*\d+[a-z]?']
+reference_patterns: []
+
+# Which distribution bots to wire (tokens in config/credentials.json)
 platforms:
   linkedin: true
   twitter: true
   reddit: true
   qa: true                                       # StackOverflow + GitHub
 
-# Trending-topic search seeds (also editable in config; last30days required)
+# Trending-topic search seeds (last30days required)
 topics:
   - "your domain discrepancy"
   - "your domain compliance"

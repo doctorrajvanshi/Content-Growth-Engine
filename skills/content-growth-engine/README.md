@@ -109,7 +109,9 @@ indexing:
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/load_config.py` | Reads `credentials.json` + `example.yaml` (file-based, no env). |
+| `scripts/load_config.py` | Reads `credentials.json` + `example.yaml` (file-based, no env). Fails loudly on bad YAML. |
+| `scripts/ingest_sources.py` | Builds a guide library from configured RSS/local/URL sources (no hard-coded topics). |
+| `scripts/generate_site.py` | Renders the markdown library into a static, SEO HTML site (GA4/form/CTA/design from config). |
 | `scripts/forward_to_telegram.py` | Multi-bot sender with Open & Post / Open & Reply buttons. |
 | `scripts/extract_platform.py` | Guide → LinkedIn/Twitter post (length + CTA from config). |
 | `scripts/reply_drafter.py` | URL/text → drafted reply with a guide link. |
