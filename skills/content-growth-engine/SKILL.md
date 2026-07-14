@@ -29,7 +29,7 @@ metadata:
         - python3
         - git
     # Secrets are read from config/credentials.json (gitignored) via
-    # scripts/load_config.py — NOT from os.environ. This keeps the skill
+    # scripts/load_config.py — not from process environment. This keeps the skill
     # installable through Hermes's security scanner.
 ---
 
