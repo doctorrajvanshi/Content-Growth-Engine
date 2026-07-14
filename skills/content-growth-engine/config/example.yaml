@@ -1,12 +1,13 @@
 # ============================================================================
 # Content Growth Engine — configuration (parameterize per product/industry)
-# Copy this file, fill it in, and point CGE_REPO at your project root.
-# NEVER put bot tokens / API keys here. Use env vars (CGE_*) or config/bots.yaml.
+# Copy this file, fill it in. Non-secret params go here.
+# SECRETS (bot tokens, API keys) go in config/credentials.json (gitignored),
+# read by scripts/load_config.py. Never commit credentials.json.
 # ============================================================================
 
 product:
   name: "YourProduct"
-  domain: "https://guides.yourproduct.com"      # or env CGE_SITE_DOMAIN
+  domain: "https://guides.yourproduct.com"      # used by scripts via load_config
   # Honest, topic-specific CTA. {topic} and {url} are substituted at runtime.
   cta_template: "YourProduct handles compliant {topic} — so you never face this failure mode. {url}"
 
@@ -22,7 +23,7 @@ categories:
   - {key: "disputes", match: ["dispute", "reject", "refuse"]}
   - {key: "practical", match: ["practical", "checklist", "how-to"]}
 
-# Which distribution bots to wire (env tokens: CGE_TG_<PLATFORM>)
+# Which distribution bots to wire (tokens in config/credentials.json)FORM>)
 platforms:
   linkedin: true
   twitter: true
@@ -36,9 +37,9 @@ topics:
   - "your standard latest update"
 
 analytics:
-  ga4_id: "G-XXXXXXX"                            # or env CGE_GA4_ID
-  formspree_id: "xxxxxx"                         # or env CGE_FORMSPREE_ID
+  ga4_id: "G-XXXXXXX"                            # non-secret, shown in HTML
+  formspree_id: "xxxxxx"                         # non-secret form id
 
 indexing:
-  indexnow_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"   # or env CGE_INDEXNOW_KEY
-  # Google: set CGE_GOOGLE_SA_JSON (service-account JSON path) — never inline.
+  indexnow_key: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"   # also in credentials.json (secret)
+  # Google: set google_sa_json (service-account JSON path) in credentials.json — never inline.

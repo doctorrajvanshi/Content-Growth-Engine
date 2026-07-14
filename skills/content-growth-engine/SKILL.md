@@ -136,7 +136,7 @@ the working copy `rm` won't un-publish it. Full recipe in `references/pitfalls.m
 ## Hard rules (from the DraftLC build — keep them here)
 
 1. Ops dashboard is LOCAL ONLY — never deployed to the public site.
-2. No secrets in the skill — env vars (CGE_*) or gitignored config/bots.yaml only.
+2. No secrets in the skill — gitignored config/credentials.json (read via load_config.py) or config/bots.yaml only.
 3. Content generation requires live/authoritative `sources:` — refuse if empty.
 4. CTA must be honest and topic-specific, never fake "error-checking" claims.
 5. Distribution is human-in-the-loop (Open & Post buttons), not silent auto-post.

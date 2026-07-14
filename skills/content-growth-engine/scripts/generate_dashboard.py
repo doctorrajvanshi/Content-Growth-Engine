@@ -21,7 +21,7 @@ cfg = cfgmod.load(__file__)
 ROOT = Path(cfg["_root"])
 LIBRARY = ROOT / "knowledge-engine" / "trade_rules_library"
 CONTENT = ROOT / "content"
-DB = ROOT / "knowledge-engine" / "draftlc_seo.db"
+DB = ROOT / "knowledge-engine" / "seo.db"
 OUTPUT = ROOT / "dashboard.html"          # LOCAL ONLY — do not deploy
 
 
