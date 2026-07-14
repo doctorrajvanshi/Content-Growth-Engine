@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Google Indexing API submission. Service-account JSON path comes from
-config/credentials.json ('google_sa_json'). No os.environ.
+config/credentials.json ('google_sa_json'). No process-env secret reads.
 
 Usage:
     python submit_google.py
