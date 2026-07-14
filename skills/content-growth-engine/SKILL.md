@@ -127,6 +127,11 @@ generate_dashboard.py (LOCAL only) → ops visibility
 The ops dashboard MUST stay local. Do not copy it into the deploy/ output dir.
 `generate_dashboard.py` writes to the repo root, not to the published site.
 
+If the dashboard ever reaches the public site, removing it is NOT a plain `rm`:
+delete it from BOTH `deploy/` and `dist/<site>/`, then `cd deploy && git rm -f
+dashboard.html && git commit && git push`. Cloudflare serves the committed tree;
+the working copy `rm` won't un-publish it. Full recipe in `references/pitfalls.md` P1.
+
 ## Verification
 
 - Scan the skill dir for bot tokens / API keys before publishing — must be 0 leaks.
@@ -140,3 +145,9 @@ The ops dashboard MUST stay local. Do not copy it into the deploy/ output dir.
 3. Content generation requires live/authoritative `sources:` — refuse if empty.
 4. CTA must be honest and topic-specific, never fake "error-checking" claims.
 5. Distribution is human-in-the-loop (Open & Post buttons), not silent auto-post.
+
+## References (read before operating)
+
+- `references/telegram_setup.md` — bot creation + env-only secret injection.
+- `references/twitter_api_tiers.md` — Free tier has NO search; monitoring needs Basic or the manual fallback.
+- `references/pitfalls.md` — dashboard un-publish recipe, last30days yt-dlp PATH fix (Windows), Telegram button pre-fill + 4096-char cap.
