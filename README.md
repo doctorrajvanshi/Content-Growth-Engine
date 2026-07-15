@@ -19,6 +19,29 @@ hermes skills install content-growth-engine
 Then create a local, gitignored `config/credentials.json` (see the skill's
 full README) and fill in `config/example.yaml`.
 
+
+
+## What's New (v1.1)
+
+### Bidirectional Reply Bots
+Users can now message your Telegram bots with a post URL or topic text, and
+get a drafted reply back — cross-referencing your guide library with live
+web research when needed.
+
+### Hardened Telegram Transport
+Every send point follows a resilience pattern: env-sourced tokens (never
+hardcoded), exponential retry (5×, 2s→60s), dead-letter queues with
+automated replay, and local-only telemetry.
+
+### Playwright Read-Only URL Fetching
+Fetch post/comment context from JS-gated platforms (LinkedIn, Twitter, SO)
+using headless Chromium with Netscape cookie injection. Read-only — no
+form filling, no clicking compose.
+
+### Dynamic Dashboard
+`build_dashboard.py` pulls live stats from your library, cron jobs, and
+git history — never stale.
+
 ## Full documentation
 
 The complete README — scripts, secrets model, dependencies, and hard rules —

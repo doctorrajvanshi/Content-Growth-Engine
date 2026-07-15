@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Generic source ingestion (sandboxed — no DraftLC sources).
+Generic source ingestion (sandboxed — no product-specific sources).
 
 Builds a guide library from AUTHORITATIVE sources the USER configures:
   - local markdown/text/PDF files

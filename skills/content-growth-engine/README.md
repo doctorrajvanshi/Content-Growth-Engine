@@ -28,6 +28,94 @@ git clone https://github.com/doctorrajvanshi/Content-Growth-Engine.git
 cp -r Content-Growth-Engine/skills/content-growth-engine ~/.hermes/skills/
 ```
 
+
+
+## Quick Start (Onboarding)
+
+### Step 1: Install the skill
+```bash
+hermes skills tap add doctorrajvanshi/Content-Growth-Engine
+hermes skills install content-growth-engine
+```
+
+### Step 2: Install dependencies
+```bash
+hermes skills tap add mvanhorn/last30days-skill
+hermes skills install last30days
+```
+
+### Step 3: Create your config
+```bash
+mkdir -p config
+cp config/example.yaml config/your-config.yaml
+# Edit config/your-config.yaml with your product name, domain, categories
+```
+
+### Step 4: Create credentials (gitignored)
+```bash
+# Create config/credentials.json with your bot tokens
+# NEVER commit this file — it's in .gitignore
+```
+
+### Step 5: Create Telegram bots
+1. Message @BotFather on Telegram: /newbot for each platform
+2. Get your chat ID from @userinfobot
+3. Add tokens to config/credentials.json
+
+### Step 6: Test the pipeline
+```bash
+# Test bot connectivity
+python scripts/forward_to_telegram.py --test
+
+# Test guide generation (with real sources)
+python scripts/ingest_sources.py --config config/your-config.yaml
+
+# Test distribution
+python scripts/forward_to_telegram.py linkedin content/linkedin/some_post.txt
+```
+
+### Step 7: Set up cron jobs
+```bash
+# Trending topics (daily)
+hermes cron create --schedule "0 8 * * *" --prompt "Run trending_topics.py"
+
+# Guide generation (as needed)
+hermes cron create --schedule "0 9 * * 1" --prompt "Run ingest_sources.py"
+```
+
+## Custom Commands
+
+| Command | Description |
+|---------|-------------|
+| `python scripts/forward_to_telegram.py --test` | Test all bot connections |
+| `python scripts/forward_to_telegram.py <platform> <file>` | Send a draft to a platform bot |
+| `python scripts/extract_platform.py <platform> <guide.md>` | Extract a platform-ready post |
+| `python scripts/reply_drafter.py <url_or_text>` | Draft a reply to a post |
+| `python scripts/trending_topics.py` | Discover trending topics |
+| `python scripts/generate_dashboard.py` | Build local ops dashboard |
+| `python scripts/submit_indexnow.py` | Submit URLs to IndexNow |
+| `python scripts/submit_google.py` | Submit to Google Indexing API |
+
+## Platform Examples
+
+### LinkedIn
+```bash
+python scripts/extract_platform.py linkedin guides/your-guide.md
+python scripts/forward_to_telegram.py linkedin content/linkedin/post.txt
+```
+
+### Twitter
+```bash
+python scripts/extract_platform.py twitter guides/your-guide.md --limit 5
+python scripts/forward_to_telegram.py twitter content/twitter/tweet.txt
+```
+
+### Reddit
+```bash
+python scripts/reply_drafter.py "https://reddit.com/r/yoursub/comments/abc123"
+python scripts/forward_to_telegram.py reddit content/replies/reply.txt
+```
+
 ### Dependencies (install last30days)
 
 `trending_topics.py` uses the [`last30days`](https://github.com/mvanhorn/last30days-skill)

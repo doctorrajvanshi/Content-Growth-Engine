@@ -12,7 +12,7 @@ SEO-friendly HTML site:
 
 Everything brand-specific (domain, GA4 id, form id, CTA, design accent,
 reference-extraction regexes) comes from config/example.yaml + credentials.json.
-This script contains NO DraftLC / trade-finance data and reads NOTHING from
+This script contains NO product-specific data and reads NOTHING from
 external project directories.
 
 Usage:
