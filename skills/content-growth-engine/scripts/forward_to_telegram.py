@@ -78,7 +78,6 @@ BOT_TOKENS = {
     "twitter": os.environ.get("TWITTER_BOT_TOKEN", "twitter-bot-token-placeholder"),
     "guide": os.environ.get("APPROVAL_BOT_TOKEN", "approval-bot-token-placeholder"),
 }
-}
 
 CHAT_ID = "YOUR_CHAT_ID"
 APPROVALS_ROOT = os.path.join(os.path.expanduser("~"), ".hermes", "approvals")

@@ -167,7 +167,7 @@ def send_to_telegram(text, platform, original_url=None, reply_url=None):
 
     # Forward via forward_to_telegram.py
     # Create a temp file with the reply
-temp_dir = Path(os.environ.get("REPLIES_DIR", "./content/replies"))
+    temp_dir = Path(os.environ.get("REPLIES_DIR", "./content/replies"))
     temp_dir.mkdir(parents=True, exist_ok=True)
 
     slug = hashlib.md5(text[:100].encode()).hexdigest()[:8]
