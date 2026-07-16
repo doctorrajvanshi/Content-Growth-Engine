@@ -5,3 +5,4 @@ __pycache__/
 # Vendored deps (cloned at install time, never committed)
 vendor/
 *.clone.tmp/
+.env

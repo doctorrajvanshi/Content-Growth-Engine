@@ -44,7 +44,17 @@ hermes skills tap add mvanhorn/last30days-skill
 hermes skills install last30days
 ```
 
-### Step 3: Create your config
+### Step 3: Create `.env` (required)
+```bash
+cp skills/content-growth-engine/.env.example .env
+# Edit .env with your real bot tokens from @BotFather
+```
+
+**All bot tokens are loaded via `python-dotenv` from `.env`.** No hardcoded fallbacks.
+If `.env` is missing, every bot returns HTTP 404 and crons silently fall back
+to the approvals bot — a common source of posts appearing in the wrong channel.
+
+### Step 4: Create your config
 ```bash
 mkdir -p config
 cp config/example.yaml config/your-config.yaml

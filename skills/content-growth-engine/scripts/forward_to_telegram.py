@@ -19,6 +19,9 @@ import requests
 import time
 from urllib.parse import quote
 from datetime import datetime, timezone
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+from pathlib import Path
 
 # --- Resilient send config (shared with gateway) ---
 SEND_MAX_RETRY = 5

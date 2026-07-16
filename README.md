@@ -42,6 +42,16 @@ form filling, no clicking compose.
 `build_dashboard.py` pulls live stats from your library, cron jobs, and
 git history — never stale.
 
+## Secrets & `.env`
+
+All bot tokens are loaded from `.env` via `python-dotenv`. No hardcoded
+fallbacks — see `.env.example` for the required variables. After creating
+`.env`, restart the Task Scheduler tasks (Admin):
+```
+schtasks /run /tn "DraftLC Telegram Gateway"
+schtasks /run /tn "DraftLC Platform Bot Listener"
+```
+
 ## Full documentation
 
 The complete README — scripts, secrets model, dependencies, and hard rules —

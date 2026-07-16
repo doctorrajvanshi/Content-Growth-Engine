@@ -91,16 +91,31 @@ Edge cache note: after pushing a broken `_redirects`, the loop persists
 with a DEEP page URL (e.g. `/ucp-600-article-2-...`), not just `/`,
 after the wait — a bare `/` check can mask a still-cached loop.
 
-## P7: Gateway wrapper must set env vars explicitly
+## P7: ALL scripts must load `.env` via python-dotenv
 
-The tokens (`APPROVAL_BOT_TOKEN` etc.) are NOT in system or user env vars
-on some hosts. The gateway's `_run_supervisor.cmd` wrapper MUST include
-`set APPROVAL_BOT_TOKEN=<real_token>` before launching Python. Without this,
-the gateway falls back to `***` and 404s silently.
+Tokens live in `.env` at project root — never hardcoded in source. But
+Task Scheduler processes and cron subagents don't automatically see `.env`.
+Every script that reads tokens MUST call `load_dotenv()` at startup:
 
-Extract the real token from `forward_to_telegram.py`'s `BOT_TOKENS` dict
-(it loads from env at import time). The wrapper needs it explicitly because
-the Task Scheduler launch context may not inherit the parent's env.
+```python
+from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+```
+
+**Without this:** running processes miss tokens set after launch, cron
+subagents get empty env vars, and sends silently fail (or fall back to
+the wrong bot). Real bug: LinkedIn posts appeared in approvals bot because
+the cron subagent's `notify_linkedin_bot.py` had an empty `LINKEDIN_BOT_TOKEN`,
+returned 404, and the subagent silently routed through approvals instead.
+
+**Install:** `python -m pip install python-dotenv` (usually pre-installed).
+
+**After setting tokens in `.env`:** restart both Task Scheduler tasks:
+```bash
+schtasks /run /tn "DraftLC Telegram Gateway"      # Admin
+schtasks /run /tn "DraftLC Platform Bot Listener"  # Admin
+```
 
 ## P8: Playwright persistent context doesn't reliably save session cookies
 
@@ -131,3 +146,52 @@ cron subagent that has model + web tools. Keeps the daemon stable.
 
 When the plan is clear, run the tools, don't narrate. Parallel tool calls
 for independent checks. One clear answer, then act.
+
+## P13: Content extraction needs multi-level fallbacks
+
+`extract_twitter.py` originally only looked for `## Failure Mode` headings
+(hook) and `## Deterministic Resolution` numbered steps (key point). Guides
+without these exact sections produced bare-title tweets with no substance.
+
+**Fix:** always have 3+ fallback sources per extracted field:
+
+| Field | Fallback chain |
+|---|---|
+| Hook | Failure Mode heading → Introduction → Key Rule / Regulatory Framework → first bold sentence → first substantive paragraph |
+| Key point | Resolution steps → Compliance Requirement / Control section → first Verify/Check/Ensure step |
+
+**Rule:** if a content extractor only has1-2 sources for a field, it WILL
+produce thin/empty output for guides that don't match the expected structure.
+Guide structures vary — always have fallbacks.
+
+P13. **Bot tokens MUST be in .env** — all scripts now use `python-dotenv`
+    to load from `.env`. No hardcoded fallbacks. If you forget to create
+    `.env`, every bot will fail silently (HTTP 404) and the cron subagent
+    will fall back to the approvals bot. After creating `.env`, restart
+    both Task Scheduler tasks:
+    ```
+    schtasks /run /tn "DraftLC Telegram Gateway"     # Admin
+    schtasks /run /tn "DraftLC Platform Bot Listener" # Admin
+    ```
+
+P14. **Verify bot tokens after any token rotation** — if a bot token
+    changes (BotFather regeneration, bot deletion/recreation), update
+    `.env` and restart both tasks. Test with:
+    ```bash
+    python scripts/forward_to_telegram.py --test
+    ```
+    This prints all 5 bots and their connection status.
+
+P15. **Thin tweets: use multi-level fallback** — `extract_twitter.py`
+    now has 5-level hook fallback (Failure Mode → Introduction →
+    Key Rule → Bold sentence → First paragraph) and 3-level key point
+    fallback (Deterministic Resolution → Compliance Requirement →
+    Verify/Check step). Guides without `## Failure Mode` or
+    `## Deterministic Resolution` sections still produce substantive
+    tweets.
+
+P16. **Cron subagent fallback to approvals bot** — when a platform bot
+    token is invalid, the cron subagent may silently fall back to the
+    approvals bot instead of failing loudly. This causes LinkedIn posts
+    to appear in the approvals channel instead of the LinkedIn bot.
+    Always verify bot tokens after deployment with `--test`.

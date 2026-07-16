@@ -79,13 +79,24 @@ cp config/example.yaml config/your-config.yaml
 # Edit config/your-config.yaml with your product name, domain, categories
 ```
 
-### Step 4: Create credentials (gitignored)
+
+### Step 4: Create `.env` (required — no hardcoded fallbacks)
 ```bash
-# Create config/credentials.json with your bot tokens
-# NEVER commit this file — it's in .gitignore
+cp skills/content-growth-engine/.env.example .env
+# Edit .env with your real bot tokens from @BotFather
 ```
 
-### Step 5: Create Telegram bots
+**Critical:** All bot tokens are loaded via `python-dotenv` from `.env`. There are
+NO hardcoded fallbacks — if `.env` is missing or tokens are empty, every bot will
+return HTTP 404 and crons will silently fall back to the approvals bot.
+
+### Step 5: Verify bot connectivity
+```bash
+python scripts/forward_to_telegram.py --test
+```
+All 5 bots should show ✓. If any show ✗, check the token in `.env`.
+
+### Step 6: Create Telegram bots
 1. Message @BotFather on Telegram: /newbot for each platform
 2. Get your chat ID from @userinfobot
 3. Add tokens to config/credentials.json
