@@ -359,11 +359,13 @@ Use title + publisher attribution for source notes instead. See `references/goog
 3. Content generation requires live/authoritative `sources:` — refuse if empty.
 4. CTA must be honest and topic-specific, never fake "error-checking" claims.
 5. Distribution is human-in-the-loop (Open & Post buttons), not silent auto-post.
+6. **NEVER fabricate regulatory citations** — article numbers, section references, legal citations must be verified against primary sources. If unknown, say so. See `references/regulatory-content-pitfalls.md`.
 
 ## References (read before operating)
 
 - `references/telegram_setup.md` — bot creation + env-only secret injection.
 - `references/pitfalls.md` — banned words list, dashboard un-publish recipe, false-positive patterns, yt-dlp PATH fix, Telegram button cap, **P6: Cloudflare `_redirects` `/*` catch-all loop (takes site down — do not deploy)**.
+- `references/regulatory-content-pitfalls.md` — never fabricate citations, stale export data, LinkedIn technical limits, content accuracy checklist.
 - `references/google_news_source_discovery.md` — RSS search technique for held topics with no dossier sources.
 - `references/guide_template.md` — standard guide structure, style rules, section requirements.
 - `references/promotion_gate.md` — MD/HTML slug-mismatch false alarm (G1), stale `status:` normalization (G2), 600-word-floor short-file topup (G3). Pairs with `scripts/promote_guides.py`.
